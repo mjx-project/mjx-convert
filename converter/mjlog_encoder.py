@@ -17,7 +17,9 @@ class MjlogEncoder:
         self._reset_xml()
 
     def _reset_xml(self):
-        self.xml = """<mjloggm ver="2.3"><SHUFFLE seed="" ref=""/><GO type="169" lobby="0"/>"""
+        self.xml = (
+            """<mjloggm ver="2.3"><SHUFFLE seed="" ref=""/><GO type="169" lobby="0"/>"""
+        )
         self.is_init_round = True
 
     def encode(self, mjxproto_rounds: List[str]) -> str:
@@ -122,7 +124,9 @@ class MjlogEncoder:
             else:
                 # NOTE: ダブロン時、winsは上家から順になっている必要がある
                 for win in state.round_terminal.wins:
-                    win_str = MjlogEncoder.update_by_win(win, state, curr_score, under_riichi)
+                    win_str = MjlogEncoder.update_by_win(
+                        win, state, curr_score, under_riichi
+                    )
                     for i in range(4):
                         curr_score.tens[i] += win.ten_changes[i]
                     curr_score.riichi = 0  # ダブロンのときは上家がリー棒を総取りしてその時点で riichi = 0 となる
@@ -165,7 +169,8 @@ class MjlogEncoder:
         ):
             ret += 'type="ron3" '
         elif (
-            state.public_observation.events[-1].type == mjxproto.EVENT_TYPE_ABORTIVE_DRAW_FOUR_KANS
+            state.public_observation.events[-1].type
+            == mjxproto.EVENT_TYPE_ABORTIVE_DRAW_FOUR_KANS
         ):
             ret += 'type="kan4" '
         elif (
@@ -221,7 +226,11 @@ class MjlogEncoder:
             win_rank = 3
         elif sum(fans) >= 6:
             win_rank = 2
-        elif (fu >= 70 and sum(fans) >= 3) or (fu >= 40 and sum(fans) >= 4) or sum(fans) >= 5:
+        elif (
+            (fu >= 70 and sum(fans) >= 3)
+            or (fu >= 40 and sum(fans) >= 4)
+            or sum(fans) >= 5
+        ):
             win_rank = 1
         return win_rank
 
@@ -262,7 +271,9 @@ class MjlogEncoder:
         doras = ",".join([str(x) for x in state.public_observation.dora_indicators])
         ret += f'doraHai="{doras}" '
         if under_riichi[win.who]:  # if under riichi (or double riichi)
-            ura_doras = ",".join([str(x) for x in state.hidden_state.ura_dora_indicators])
+            ura_doras = ",".join(
+                [str(x) for x in state.hidden_state.ura_dora_indicators]
+            )
             ret += f'doraHaiUra="{ura_doras}" '
         ret += f'who="{win.who}" fromWho="{win.from_who}" '
         sc = []
@@ -289,7 +300,9 @@ class MjlogEncoder:
 
     @staticmethod
     def _parse_player_id(state: mjxproto.State) -> str:
-        players = [urllib.parse.quote(player) for player in state.public_observation.player_ids]
+        players = [
+            urllib.parse.quote(player) for player in state.public_observation.player_ids
+        ]
         return f'<UN n0="{players[0]}" n1="{players[1]}" n2="{players[2]}" n3="{players[3]}"/>'
 
     @staticmethod

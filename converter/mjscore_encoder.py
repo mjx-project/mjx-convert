@@ -6,7 +6,14 @@ from typing import Dict, List
 
 import mjxproto
 from mjx.const import AbsolutePos, RelativePos
-from mjx.converter import open_converter
+from .open_converter import (
+    open_event_type,
+    open_from,
+    change_open_tile_fmt,
+    open_stolen_tile_type,
+    change_open_tiles_fmt,
+    open_tile_types,
+)
 
 
 def _change_tile_fmt(tile_id: int) -> int:
@@ -29,10 +36,10 @@ def _change_tiles_fmt(tile_ids):
 
 # openの情報を受け取ってmjscore形式に変更する関数
 def _change_action_format(bits: int) -> str:  # TODO カン
-    event_type = open_converter.open_event_type(bits)
-    open_from = open_converter.open_from(bits)
-    stolen_tile = open_converter.change_open_tile_fmt(open_converter.open_stolen_tile_type(bits))
-    open_tiles = open_converter.change_open_tiles_fmt(open_converter.open_tile_types(bits))
+    event_type = open_event_type(bits)
+    open_from = open_from(bits)
+    stolen_tile = change_open_tile_fmt(open_stolen_tile_type(bits))
+    open_tiles = change_open_tiles_fmt(open_tile_types(bits))
     open_tiles.remove(stolen_tile)
     if event_type == mjxproto.EVENT_TYPE_CHI:  # チー
         return "c" + str(stolen_tile) + str(open_tiles[0]) + str(open_tiles[1])
@@ -69,7 +76,13 @@ def _change_action_format(bits: int) -> str:  # TODO カン
                 + str(open_tiles[2])
             )
     elif event_type == mjxproto.EVENT_TYPE_CLOSED_KAN:  # 暗槓
-        return str(stolen_tile) + str(stolen_tile) + str(stolen_tile) + "a" + str(open_tiles[-1])
+        return (
+            str(stolen_tile)
+            + str(stolen_tile)
+            + str(stolen_tile)
+            + "a"
+            + str(open_tiles[-1])
+        )
     else:  # 明槓
         if open_from == RelativePos.LEFT:
             return (
@@ -125,7 +138,9 @@ def parse_discards(events, abs_pos: int):
                 discards.append("r" + str(_change_tile_fmt(event.tile)))
             else:
                 discards.append(_change_tile_fmt(event.tile))
-        elif event.type == mjxproto.EVENT_TYPE_TSUMOGIRI and event.who == abs_pos:  # ツモギリ
+        elif (
+            event.type == mjxproto.EVENT_TYPE_TSUMOGIRI and event.who == abs_pos
+        ):  # ツモギリ
             if events[i - 1].type == mjxproto.EVENT_TYPE_RIICHI:  # 一つ前のeventがriichiかどうか
                 discards.append("r60")
             else:
@@ -157,7 +172,9 @@ def parse_draw_history(draw_history, events, abs_pos):
     for i, event in enumerate(events):
         if event.type == mjxproto.EVENT_TYPE_DISCARD and event.who == abs_pos:  # 手出し
             discards.append(event.tile)
-        elif event.type == mjxproto.EVENT_TYPE_TSUMOGIRI and event.who == abs_pos:  # ツモギリ
+        elif (
+            event.type == mjxproto.EVENT_TYPE_TSUMOGIRI and event.who == abs_pos
+        ):  # ツモギリ
             discards.append(60)
         elif event.type == mjxproto.EVENT_TYPE_CHI and event.who == abs_pos:  # チー
             discards.append(event.open)
@@ -309,7 +326,9 @@ def _is_oya(who: int, round: int) -> bool:  # 和了者が親かどうか判定�
         return False
 
 
-def _winner_point(who: int, from_who: int, fans: List[int], fu: int, ten: int, round: int) -> str:
+def _winner_point(
+    who: int, from_who: int, fans: List[int], fu: int, ten: int, round: int
+) -> str:
     """
     >>> _winner_point(0, 0, [3, 0], 30, 6000, 0)
     '30符3飜2000点∀'
@@ -388,7 +407,12 @@ def _yaku_point_info(state: mjxproto.State, winner_num: int):
     # fnas:[役での飜数, ドラでの飜数]
     # yakus: [役とドラの種類]
     # ten: 純粋に上がり点が表示される。ツモ上がりの際の対応が必要
-    yaku_point_infos = [who, from_who, who, _winner_point(who, from_who, fans, fu, ten, round)]
+    yaku_point_infos = [
+        who,
+        from_who,
+        who,
+        _winner_point(who, from_who, fans, fu, ten, round),
+    ]
     yaku_point_infos.extend(_winner_yakus(yakus, fans, yakumans))
     return yaku_point_infos
 
@@ -396,7 +420,10 @@ def _yaku_point_info(state: mjxproto.State, winner_num: int):
 def parse_terminal(state: mjxproto.State):
     if len(state.round_terminal.wins) == 0:  # あがった人がいない場合,# state.terminal.winsの長さは0
         ten_changes = [i for i in state.round_terminal.no_winner.ten_changes]
-        if state.public_observation.events[-1].type == mjxproto.EVENT_TYPE_EXHAUSTIVE_DRAW_NORMAL:
+        if (
+            state.public_observation.events[-1].type
+            == mjxproto.EVENT_TYPE_EXHAUSTIVE_DRAW_NORMAL
+        ):
             if len(state.round_terminal.no_winner.tenpais) == 0:
                 return ["全員不聴"]
             else:
@@ -410,7 +437,9 @@ def parse_terminal(state: mjxproto.State):
         return [no_winner_dict[state.public_observation.events[-1].type]]
     else:
         terminal_info: List = ["和了"]
-        for i in range(len(state.round_terminal.wins)):  # ダブロンに対応するために上がり者の数に応じてfor文を回すようにする。
+        for i in range(
+            len(state.round_terminal.wins)
+        ):  # ダブロンに対応するために上がり者の数に応じてfor文を回すようにする。
             ten_changes = [i for i in state.round_terminal.wins[i].ten_changes]
             yaku_point_info = _yaku_point_info(state, i)
             terminal_info.append(ten_changes)
@@ -435,7 +464,9 @@ def mjxproto_to_mjscore(state: mjxproto.State) -> str:
     round: int = state.public_observation.init_score.round
     honba: int = state.public_observation.init_score.honba
     riichi: int = state.public_observation.init_score.riichi
-    doras: List[int] = [_change_tile_fmt(i) for i in state.public_observation.dora_indicators]
+    doras: List[int] = [
+        _change_tile_fmt(i) for i in state.public_observation.dora_indicators
+    ]
     ura_doras = determine_ura_doras_list(state)
     init_score: List[int] = [i for i in state.public_observation.init_score.tens]
     log = [[round, honba, riichi], init_score, doras, ura_doras]
@@ -448,7 +479,9 @@ def mjxproto_to_mjscore(state: mjxproto.State) -> str:
     for abs_pos in absolute_pos:
         log.append(
             sort_init_hand(
-                _change_tiles_fmt(state.private_observations[abs_pos].init_hand.closed_tiles)
+                _change_tiles_fmt(
+                    state.private_observations[abs_pos].init_hand.closed_tiles
+                )
             )
         )
         log.append(
