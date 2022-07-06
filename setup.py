@@ -19,6 +19,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "click==8.0.1",
+        "mjx==0.0.7",
         "tenhou_wall_reproducer",
     ],
     extras_require={"test": ["pytest"]},
