@@ -15,7 +15,7 @@ setup(
     packages=find_packages("."),
     package_dir={"": "."},
     # package_data={'': ['*.json']},
-    entry_points={"console_scripts": "mjx-convert = converter.main:main"},
+    entry_points={"console_scripts": "mjxc = converter.main:main"},
     zip_safe=False,
     install_requires=[
         "click==8.0.1",

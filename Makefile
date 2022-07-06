@@ -6,19 +6,19 @@ venv:
 
 cli-test:
 	echo "From mjlog => mjxproto"
-	cat tests_cpp/resources/mjlog/*.mjlog | mjx-convert convert --to-mjxproto --verbose | wc -l
-	cat tests_cpp/resources/mjlog/*.mjlog | mjx-convert convert --to-mjxproto --compress --verbose | wc -l
-	cat tests_cpp/resources/mjlog/*.mjlog | mjx-convert convert --to-mjxproto-raw --verbose | wc -l
+	cat tests_cpp/resources/mjlog/*.mjlog | mjxc convert --to-mjxproto --verbose | wc -l
+	cat tests_cpp/resources/mjlog/*.mjlog | mjxc convert --to-mjxproto --compress --verbose | wc -l
+	cat tests_cpp/resources/mjlog/*.mjlog | mjxc convert --to-mjxproto-raw --verbose | wc -l
 	mkdir -p tests_cpp/resources/mjxproto
-	mjx-convert convert tests_cpp/resources/mjlog tests_cpp/resources/mjxproto --to-mjxproto --verbose && cat tests_cpp/resources/mjxproto/* | wc -l
+	mjxc convert tests_cpp/resources/mjlog tests_cpp/resources/mjxproto --to-mjxproto --verbose && cat tests_cpp/resources/mjxproto/* | wc -l
 	rm -rf tests_cpp/resources/mjxproto/*.json
-	mjx-convert convert tests_cpp/resources/mjlog tests_cpp/resources/mjxproto --to-mjxproto --compress --verbose && cat tests_cpp/resources/mjxproto/* | wc -l
+	mjxc convert tests_cpp/resources/mjlog tests_cpp/resources/mjxproto --to-mjxproto --compress --verbose && cat tests_cpp/resources/mjxproto/* | wc -l
 	rm tests_cpp/resources/mjxproto/*.json
-	mjx-convert convert tests_cpp/resources/mjlog tests_cpp/resources/mjxproto --to-mjxproto-raw --verbose && cat tests_cpp/resources/mjxproto/* | wc -l
+	mjxc convert tests_cpp/resources/mjlog tests_cpp/resources/mjxproto --to-mjxproto-raw --verbose && cat tests_cpp/resources/mjxproto/* | wc -l
 	echo "From mjxproto => mjlog_recovered"
-	cat tests_cpp/resources/mjxproto/*.json | mjx-convert convert --to-mjlog --verbose | wc -l
+	cat tests_cpp/resources/mjxproto/*.json | mjxc convert --to-mjlog --verbose | wc -l
 	mkdir -p tests_cpp/resources/mjlog_recovered
-	mjx-convert convert tests_cpp/resources/mjxproto tests_cpp/resources/mjlog_recovered --to-mjlog --verbose && cat tests_cpp/resources/mjlog_recovered/* | wc -l
+	mjxc convert tests_cpp/resources/mjxproto tests_cpp/resources/mjlog_recovered --to-mjlog --verbose && cat tests_cpp/resources/mjlog_recovered/* | wc -l
 	echo "Check diff"
 	python3 utils/diff.py tests_cpp/resources/mjlog tests_cpp/resources/mjlog_recovered
 	echo "Clean up"
