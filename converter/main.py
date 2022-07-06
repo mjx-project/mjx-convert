@@ -9,8 +9,8 @@ import click
 from google.protobuf import json_format
 
 import mjxproto
-from converter.mjlog_decoder import MjlogDecoder
-from converter.mjlog_encoder import MjlogEncoder
+from .mjlog_decoder import MjlogDecoder
+from .mjlog_encoder import MjlogEncoder
 from mjx.visualizer.visualizer import (
     GameBoardVisualizer,
     GameVisualConfig,
