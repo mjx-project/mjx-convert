@@ -37,21 +37,21 @@ def _change_tiles_fmt(tile_ids):
 # openの情報を受け取ってmjscore形式に変更する関数
 def _change_action_format(bits: int) -> str:  # TODO カン
     event_type = open_event_type(bits)
-    open_from = open_from(bits)
+    _open_from = open_from(bits)
     stolen_tile = change_open_tile_fmt(open_stolen_tile_type(bits))
     open_tiles = change_open_tiles_fmt(open_tile_types(bits))
     open_tiles.remove(stolen_tile)
     if event_type == mjxproto.EVENT_TYPE_CHI:  # チー
         return "c" + str(stolen_tile) + str(open_tiles[0]) + str(open_tiles[1])
     elif event_type == mjxproto.EVENT_TYPE_PON:  # ポン
-        if open_from == RelativePos.LEFT:
+        if _open_from == RelativePos.LEFT:
             return "p" + str(stolen_tile) + str(open_tiles[0]) + str(open_tiles[1])
-        elif open_from == RelativePos.MID:
+        elif _open_from == RelativePos.MID:
             return str(open_tiles[0]) + "p" + str(stolen_tile) + str(open_tiles[1])
         else:
             return str(open_tiles[0]) + str(open_tiles[1]) + "p" + str(stolen_tile)
     elif event_type == mjxproto.EVENT_TYPE_ADDED_KAN:  # 加槓
-        if open_from == RelativePos.LEFT:
+        if _open_from == RelativePos.LEFT:
             return (
                 "k"
                 + str(stolen_tile)
@@ -59,7 +59,7 @@ def _change_action_format(bits: int) -> str:  # TODO カン
                 + str(open_tiles[1])
                 + str(open_tiles[2])
             )
-        elif open_from == RelativePos.MID:
+        elif _open_from == RelativePos.MID:
             return (
                 str(open_tiles[0])
                 + "k"
@@ -84,7 +84,7 @@ def _change_action_format(bits: int) -> str:  # TODO カン
             + str(open_tiles[-1])
         )
     else:  # 明槓
-        if open_from == RelativePos.LEFT:
+        if _open_from == RelativePos.LEFT:
             return (
                 "m"
                 + str(stolen_tile)
@@ -92,7 +92,7 @@ def _change_action_format(bits: int) -> str:  # TODO カン
                 + str(open_tiles[1])
                 + str(open_tiles[2])
             )
-        elif open_from == RelativePos.MID:
+        elif _open_from == RelativePos.MID:
             return (
                 str(open_tiles[0])
                 + "m"
