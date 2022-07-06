@@ -9,9 +9,13 @@ import click
 from google.protobuf import json_format
 
 import mjxproto
-from mjx.converter.mjlog_decoder import MjlogDecoder
-from mjx.converter.mjlog_encoder import MjlogEncoder
-from mjx.visualizer.visualizer import GameBoardVisualizer, GameVisualConfig, MahjongTable
+from converter.mjlog_decoder import MjlogDecoder
+from converter.mjlog_encoder import MjlogEncoder
+from mjx.visualizer.visualizer import (
+    GameBoardVisualizer,
+    GameVisualConfig,
+    MahjongTable,
+)
 
 
 @click.group(help="A CLI tool of mjx")
@@ -282,7 +286,9 @@ def convert(
 @click.option("--rich", is_flag=True)
 @click.option("--show_name", is_flag=True)
 @click.option("--jp", is_flag=True)
-def visualize(path: str, page: str, mode: str, uni: bool, rich: bool, show_name: bool, jp: bool):
+def visualize(
+    path: str, page: str, mode: str, uni: bool, rich: bool, show_name: bool, jp: bool
+):
     """Visualize Mahjong json data.
 
     Example (using stdin)
@@ -311,7 +317,9 @@ def visualize(path: str, page: str, mode: str, uni: bool, rich: bool, show_name:
 
     else:  # From files
         proto_data_list = MahjongTable.load_proto_data(path)
-        mahjong_tables = [MahjongTable.from_proto(proto_data) for proto_data in proto_data_list]
+        mahjong_tables = [
+            MahjongTable.from_proto(proto_data) for proto_data in proto_data_list
+        ]
         board_visualizer.print(mahjong_tables[int(page)])
 
 

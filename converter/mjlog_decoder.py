@@ -13,7 +13,7 @@ from google.protobuf import json_format
 
 import mjxproto
 from mjx.const import AbsolutePos, RelativePos
-from mjx.converter.hand import Hand
+from .hand import Hand
 
 
 class MjlogDecoder:
@@ -71,10 +71,18 @@ class MjlogDecoder:
         # TODO(sotetsuk): if there are > 2 "UN", some user became offline
         un = root.iter("UN")
         for child in un:
-            state_.public_observation.player_ids.append(urllib.parse.unquote(child.attrib["n0"]))
-            state_.public_observation.player_ids.append(urllib.parse.unquote(child.attrib["n1"]))
-            state_.public_observation.player_ids.append(urllib.parse.unquote(child.attrib["n2"]))
-            state_.public_observation.player_ids.append(urllib.parse.unquote(child.attrib["n3"]))
+            state_.public_observation.player_ids.append(
+                urllib.parse.unquote(child.attrib["n0"])
+            )
+            state_.public_observation.player_ids.append(
+                urllib.parse.unquote(child.attrib["n1"])
+            )
+            state_.public_observation.player_ids.append(
+                urllib.parse.unquote(child.attrib["n2"])
+            )
+            state_.public_observation.player_ids.append(
+                urllib.parse.unquote(child.attrib["n3"])
+            )
             break
         # taikyoku = root.iter("TAIKYOKU")
 
@@ -124,7 +132,9 @@ class MjlogDecoder:
         """
         key, val = kv[0]
         assert key == "INIT"
-        round_, honba, riichi, dice1, dice2, dora = [int(x) for x in val["seed"].split(",")]
+        round_, honba, riichi, dice1, dice2, dora = [
+            int(x) for x in val["seed"].split(",")
+        ]
         self.state.public_observation.init_score.round = round_
         self.state.public_observation.init_score.honba = honba
         self.state.public_observation.init_score.riichi = riichi
@@ -153,16 +163,23 @@ class MjlogDecoder:
         for i in range(4 * 12):
             assert (
                 wall[i]
-                in self.state.private_observations[((i // 4) + round_) % 4].init_hand.closed_tiles
+                in self.state.private_observations[
+                    ((i // 4) + round_) % 4
+                ].init_hand.closed_tiles
             )
         for i in range(4 * 12, 4 * 13):
             assert (
-                wall[i] in self.state.private_observations[(i + round_) % 4].init_hand.closed_tiles
+                wall[i]
+                in self.state.private_observations[
+                    (i + round_) % 4
+                ].init_hand.closed_tiles
             )
 
         curr_hands = []
         for i in range(4):
-            curr_hands.append(Hand([int(x) for x in val["hai" + str(i)].split(",")], []))
+            curr_hands.append(
+                Hand([int(x) for x in val["hai" + str(i)].split(",")], [])
+            )
         event = None
         num_kan_dora = 0
         self.last_drawer = None
@@ -236,7 +253,9 @@ class MjlogDecoder:
                 win_tile = int(val["machi"])
                 event = mjxproto.Event(
                     who=who,
-                    type=mjxproto.EVENT_TYPE_TSUMO if who == from_who else mjxproto.EVENT_TYPE_RON,
+                    type=mjxproto.EVENT_TYPE_TSUMO
+                    if who == from_who
+                    else mjxproto.EVENT_TYPE_RON,
                     tile=win_tile,
                 )
                 win = MjlogDecoder.make_win(
@@ -256,7 +275,9 @@ class MjlogDecoder:
                         int(x) for x in val["doraHaiUra"].split(",")
                     ]
                 self.state.round_terminal.CopyFrom(
-                    MjlogDecoder.update_terminal_by_win(self.state.round_terminal, win, val)
+                    MjlogDecoder.update_terminal_by_win(
+                        self.state.round_terminal, win, val
+                    )
                 )
                 if who != from_who:  # ron
                     curr_hands[who].add(win_tile)
@@ -321,7 +342,9 @@ class MjlogDecoder:
             terminal.no_winner.tenpais.append(
                 mjxproto.TenpaiHand(
                     who=i,
-                    hand=mjxproto.Hand(closed_tiles=hands[i].closed_tiles, opens=hands[i].opens),
+                    hand=mjxproto.Hand(
+                        closed_tiles=hands[i].closed_tiles, opens=hands[i].opens
+                    ),
                 )
             )
             assert [int(x) for x in hands[i].closed_tiles] == [
@@ -335,7 +358,9 @@ class MjlogDecoder:
                 max_ten = max(terminal.final_score.tens)
                 for i in range(4):
                     if terminal.final_score.tens[i] == max_ten:
-                        terminal.final_score.tens[i] += 1000 * terminal.final_score.riichi
+                        terminal.final_score.tens[i] += (
+                            1000 * terminal.final_score.riichi
+                        )
                         break
             terminal.final_score.riichi = 0
             terminal.is_game_over = True
@@ -491,7 +516,9 @@ def reproduce_wall_from_mjlog(mjlog_str: str) -> List[Tuple[List[int], List[int]
     for i, child in enumerate(shuffle):
         assert i == 0
         x = child.attrib["seed"].split(",")
-        assert x[0] == "mt19937ar-sha512-n288-base64", f"seed = {x}\nmjlog = {mjlog_str}"
+        assert (
+            x[0] == "mt19937ar-sha512-n288-base64"
+        ), f"seed = {x}\nmjlog = {mjlog_str}"
         assert len(x) == 2, f"seed = {x}\nmjlog = {mjlog_str}"
         seed = repr(x[1])[1:-1]
     assert len(seed) != 0, "Old (~2009.xx) log does not have SHUFFLE item"
