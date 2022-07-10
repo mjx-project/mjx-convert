@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-import mjxproto
+from . import mjxproto
 
 
 class ActionType(IntEnum):

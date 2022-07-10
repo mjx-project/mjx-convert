@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from typing import Dict, List
 
-import mjxproto
+from . import mjxproto
 from .const import AbsolutePos, RelativePos
 from .open_converter import (
     open_event_type,

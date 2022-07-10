@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import List
 
-import mjxproto
+from . import mjxproto
 from .const import RelativePos
 
 

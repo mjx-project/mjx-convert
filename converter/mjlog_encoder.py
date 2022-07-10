@@ -7,7 +7,7 @@ from typing import List
 
 from google.protobuf import json_format
 
-import mjxproto
+from . import mjxproto
 
 
 class MjlogEncoder:

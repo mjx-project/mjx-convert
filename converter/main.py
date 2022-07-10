@@ -8,7 +8,7 @@ from typing import List, Optional
 import click
 from google.protobuf import json_format
 
-import mjxproto
+from . import mjxproto
 from .mjlog_decoder import MjlogDecoder
 from .mjlog_encoder import MjlogEncoder
 
