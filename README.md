@@ -15,17 +15,17 @@ $ make install
 ### Using stdin
 
 ```sh
-$ cat test.mjlog | mjx convert --to-mjxproto
-$ cat test.mjlog | mjx convert --to-mjxproto-raw
-$ cat test.json  | mjx convert --to-mjlog
+$ cat test.mjlog | mjxc convert --to-mjxproto
+$ cat test.mjlog | mjxc convert --to-mjxproto-raw
+$ cat test.json  | mjxc convert --to-mjlog
 ```
 
 ### Using file inputs
 
 ```sh
-$ mjx convert ./mjlog_dir ./mjxproto_dir --to-mjxproto
-$ mjx convert ./mjlog_dir ./mjxproto_dir --to-mjxproto-raw
-$ mjx convert ./mjxproto_dir ./mjlog_dir --to-mjlog
+$ mjxc convert ./mjlog_dir ./mjxproto_dir --to-mjxproto
+$ mjxc convert ./mjlog_dir ./mjxproto_dir --to-mjxproto-raw
+$ mjxc convert ./mjxproto_dir ./mjlog_dir --to-mjlog
 ```
 
 ## Note
