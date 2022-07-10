@@ -19,6 +19,9 @@ setup(
     zip_safe=False,
     install_requires=[
         "click==8.0.1",
+        "google==3.0.0",
+        "protobuf==3.17.3",
+        "grpcio==1.39.0",
         "tenhou_wall_reproducer",
     ],
     extras_require={"test": ["pytest"]},

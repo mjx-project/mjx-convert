@@ -1,0 +1,19 @@
+name: tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+        architecture: 'x64'
+    - name: install
+      run: |
+        python3 setup.py install
+    - name: cli test
+      run: |
+        make cli-test
