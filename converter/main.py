@@ -8,14 +8,9 @@ from typing import List, Optional
 import click
 from google.protobuf import json_format
 
-import mjxproto
+from . import mjxproto
 from .mjlog_decoder import MjlogDecoder
 from .mjlog_encoder import MjlogEncoder
-from mjx.visualizer.visualizer import (
-    GameBoardVisualizer,
-    GameVisualConfig,
-    MahjongTable,
-)
 
 
 @click.group(help="A CLI tool of mjx")
@@ -277,50 +272,6 @@ def convert(
             with open(path_to, "w") as f:
                 for line in transformed_lines:
                     f.write(line)
-
-
-@cli.command()
-@click.argument("path", type=str, default="")
-@click.argument("page", type=str, default="0")
-@click.option("--uni", is_flag=True)
-@click.option("--rich", is_flag=True)
-@click.option("--show_name", is_flag=True)
-@click.option("--jp", is_flag=True)
-def visualize(
-    path: str, page: str, mode: str, uni: bool, rich: bool, show_name: bool, jp: bool
-):
-    """Visualize Mahjong json data.
-
-    Example (using stdin)
-
-      $ cat test.json  | mjx visualize
-      $ head test.json -n 10  | mjx visualize --rich --uni
-      $ head test.json -n 10  | mjx visualize --rich --jp
-
-    Example (using file inputs)
-
-      $ mjx visualize test.json 0
-      $ mjx visualize test.json 0 --rich --uni --show_name --jp
-
-    """
-    board_visualizer = GameBoardVisualizer(
-        GameVisualConfig(rich=rich, uni=uni, show_name=show_name, lang=(1 if jp else 0))
-    )
-
-    if path == "":  # From stdin
-        itr = StdinIterator()
-        for line in itr:
-            s_line = line.strip().strip("\n")
-            proto_data = MahjongTable.json_to_proto(s_line)
-            mahjong_table = MahjongTable.from_proto(proto_data)
-            board_visualizer.print(mahjong_table)
-
-    else:  # From files
-        proto_data_list = MahjongTable.load_proto_data(path)
-        mahjong_tables = [
-            MahjongTable.from_proto(proto_data) for proto_data in proto_data_list
-        ]
-        board_visualizer.print(mahjong_tables[int(page)])
 
 
 def main():

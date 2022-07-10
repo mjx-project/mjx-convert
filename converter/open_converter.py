@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import List
 
-import mjxproto
-from mjx.const import RelativePos
+from . import mjxproto
+from .const import RelativePos
 
 
 def open_event_type(bits: int) -> mjxproto.EventTypeValue:
