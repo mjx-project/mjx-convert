@@ -11,6 +11,9 @@ jobs:
       with:
         python-version: '3.9'
         architecture: 'x64'
+    - name: install
+      run: |
+        python3 setup.py install
     - name: cli test
       run: |
         make cli-test
