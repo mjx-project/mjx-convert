@@ -12,7 +12,7 @@ import tenhou_wall_reproducer
 from google.protobuf import json_format
 
 import mjxproto
-from mjx.const import AbsolutePos, RelativePos
+from .const import AbsolutePos, RelativePos
 from .hand import Hand
 
 
